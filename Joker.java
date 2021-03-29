@@ -1,6 +1,6 @@
 public class Joker extends Player{
 
-    public Joker(String playerName) {
-        super(playerName);
+    public Joker(String playerName, String playerRole) {
+        super(playerName, playerRole);
     }
 }
