@@ -1,2 +1,2 @@
-public class Night {
+package PACKAGE_NAME;public class Night {
 }

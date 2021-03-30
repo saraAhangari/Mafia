@@ -1,2 +1,2 @@
-public class Day {
+package PACKAGE_NAME;public class Day {
 }

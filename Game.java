@@ -10,6 +10,7 @@ public class Game {
     public static boolean GameStarted = false;
     public static boolean foundName = false;
     public static boolean foundvoter = false;
+    public static boolean foundvotee = false;
     public static boolean NighOn = false;
     public static String[] Roles = {"Joker", "villager", "detective", "doctor", "bulletproof", "mafia", "godfather", "silencer"};
 
@@ -28,6 +29,7 @@ public class Game {
                 for (int i = 0; i < members; i++) {
                     if (name.equals(playerNames[i])) {
                         players[i] = new bulletproof(name, role);
+                        players[i].hasRoleOnNight=false;
                         foundName = true;
                         break;
                     }
@@ -39,6 +41,7 @@ public class Game {
                 for (int i = 0; i < members; i++) {
                     if (name.equals(playerNames[i])) {
                         players[i] = new detective(name, role);
+                        players[i].hasRoleOnNight=true;
                         foundName = true;
                         break;
                     }
@@ -50,6 +53,7 @@ public class Game {
                 for (int i = 0; i < members; i++) {
                     if (name.equals(playerNames[i])) {
                         players[i] = new doctor(name, role);
+                        players[i].hasRoleOnNight=true;
                         foundName = true;
                         break;
                     }
@@ -61,6 +65,7 @@ public class Game {
                 for (int i = 0; i < members; i++) {
                     if (name.equals(playerNames[i])) {
                         players[i] = new godfather(name, role);
+                        players[i].hasRoleOnNight=false;
                         foundName = true;
                         break;
                     }
@@ -72,6 +77,7 @@ public class Game {
                 for (int i = 0; i < members; i++) {
                     if (name.equals(playerNames[i])) {
                         players[i] = new Joker(name, role);
+                        players[i].hasRoleOnNight=false;
                         foundName = true;
                         break;
                     }
@@ -83,6 +89,7 @@ public class Game {
                 for (int i = 0; i < members; i++) {
                     if (name.equals(playerNames[i])) {
                         players[i] = new mafia(name, role);
+                        players[i].hasRoleOnNight=true;
                         foundName = true;
                         break;
                     }
@@ -94,6 +101,7 @@ public class Game {
                 for (int i = 0; i < members; i++) {
                     if (name.equals(playerNames[i])) {
                         players[i] = new silencer(name, role);
+                        players[i].hasRoleOnNight=false;
                         foundName = true;
                         break;
                     }
@@ -105,6 +113,7 @@ public class Game {
                 for (int i = 0; i < members; i++) {
                     if (name.equals(playerNames[i])) {
                         players[i] = new villager(name, role);
+                        players[i].hasRoleOnNight=false;
                         foundName = true;
                         break;
                     }
@@ -133,27 +142,6 @@ public class Game {
         }
         NighOn = false;
         GameStarted = true;
-    }
-
-    public static void vote(String voter , String votee) {
-        for (int i = 0; i <members ; i++) {
-            if (voter.equals(players[i].playerName)) {
-                foundvoter = true;
-                if (players[i].isSilent) {
-                    System.out.println("voter is silenced");
-                    break;
-                }
-            }
-            for (int j = 0; j <members ; j++) {
-                if (votee.equals(players[j].playerName))
-                    if (players[j].isKilled)
-                        System.out.println("votee already dead");
-                    else
-                        players[j].voteNum++;
-            }
-        }
-        if (!foundvoter)
-            System.out.println("user not found");
     }
 
     public static void endVote(){
@@ -185,6 +173,14 @@ public class Game {
             }
         }
             System.out.println(qorbani + " is dead");
+    }
+
+    public static void awakeonNights(){
+        for (int i = 0; i <members ; i++) {
+            if (players[i].hasRoleOnNight){
+                System.out.println(players[i].playerName + " : " + players[i].playerRole);
+            }
+        }
     }
 
     public static void main(String[] args) {
@@ -230,23 +226,22 @@ public class Game {
                         break;
                     }else {
                         showList();
+                        System.out.println();
                         System.out.println("Ready? Set! Go...");
                         System.out.println();
                         System.out.println("Day : " + numofDay );
                         numofDay++;
                         System.out.println("Now you can vote");
+                        Day day = new Day();
+                        day.sunRise(players , members , foundvoter , foundvotee);
                     }
-                    break;
-                case "vote":
-                    voter = sc.next();
-                    votee = sc.next();
-                    vote(voter , votee);
                     break;
                 case "end_vote":
                     endVote();
                     System.out.println();
-                    System.out.println("Night : " + numofNight );
+                    System.out.println("Night " + numofNight );
                     numofNight++;
+                    awakeonNights();
                     break;
             }
         }
