@@ -1,18 +1,20 @@
 import java.util.Scanner;
 
 public class Game {
-    static Player[] players;
-    static String[] playerNames;
-    static int members = 0;
-    static int numofDay =1;
-    static int numofNight=1;
+    public static Player[] players;
+    public static Player[] allMembers;
+    public static String[] playerNames;
+    public static int members = 0 ;
     public static boolean GameCreated = false;
     public static boolean GameStarted = false;
     public static boolean foundName = false;
-    public static boolean foundvoter = false;
-    public static boolean foundvotee = false;
-    public static boolean NighOn = false;
-    public static String[] Roles = {"Joker", "villager", "detective", "doctor", "bulletproof", "mafia", "godfather", "silencer"};
+    public static boolean mafiaWon = false;
+    public static boolean villagerWon = false;
+    public static String triedTokill = null;
+    public static String silent = null;
+    public static String victim = null;
+    public static Night night = new Night();
+    public static Day day = new Day();
 
     public static String[] createGame(String[] names, int members) {
         playerNames = new String[members];
@@ -20,6 +22,7 @@ public class Game {
             playerNames[i] = names[i];
         }
         players = new Player[members];
+        allMembers = new Player[members];
         return playerNames;
     }
 
@@ -29,7 +32,8 @@ public class Game {
                 for (int i = 0; i < members; i++) {
                     if (name.equals(playerNames[i])) {
                         players[i] = new bulletproof(name, role);
-                        players[i].hasRoleOnNight=false;
+                        allMembers[i] = new bulletproof(name,role);
+                        players[i].hasRoleOnNight = false;
                         foundName = true;
                         break;
                     }
@@ -41,7 +45,8 @@ public class Game {
                 for (int i = 0; i < members; i++) {
                     if (name.equals(playerNames[i])) {
                         players[i] = new detective(name, role);
-                        players[i].hasRoleOnNight=true;
+                        allMembers[i] = new detective(name , role);
+                        players[i].hasRoleOnNight = true;
                         foundName = true;
                         break;
                     }
@@ -53,7 +58,8 @@ public class Game {
                 for (int i = 0; i < members; i++) {
                     if (name.equals(playerNames[i])) {
                         players[i] = new doctor(name, role);
-                        players[i].hasRoleOnNight=true;
+                        allMembers[i] = new doctor(name , role);
+                        players[i].hasRoleOnNight = true;
                         foundName = true;
                         break;
                     }
@@ -65,7 +71,8 @@ public class Game {
                 for (int i = 0; i < members; i++) {
                     if (name.equals(playerNames[i])) {
                         players[i] = new godfather(name, role);
-                        players[i].hasRoleOnNight=false;
+                        allMembers[i] = new godfather(name , role);
+                        players[i].hasRoleOnNight = false;
                         foundName = true;
                         break;
                     }
@@ -77,7 +84,8 @@ public class Game {
                 for (int i = 0; i < members; i++) {
                     if (name.equals(playerNames[i])) {
                         players[i] = new Joker(name, role);
-                        players[i].hasRoleOnNight=false;
+                        allMembers[i] = new Joker(name , role);
+                        players[i].hasRoleOnNight = false;
                         foundName = true;
                         break;
                     }
@@ -89,7 +97,8 @@ public class Game {
                 for (int i = 0; i < members; i++) {
                     if (name.equals(playerNames[i])) {
                         players[i] = new mafia(name, role);
-                        players[i].hasRoleOnNight=true;
+                        allMembers[i] = new mafia(name , role);
+                        players[i].hasRoleOnNight = true;
                         foundName = true;
                         break;
                     }
@@ -101,7 +110,8 @@ public class Game {
                 for (int i = 0; i < members; i++) {
                     if (name.equals(playerNames[i])) {
                         players[i] = new silencer(name, role);
-                        players[i].hasRoleOnNight=false;
+                        allMembers[i] = new silencer(name , role);
+                        players[i].hasRoleOnNight = false;
                         foundName = true;
                         break;
                     }
@@ -113,7 +123,8 @@ public class Game {
                 for (int i = 0; i < members; i++) {
                     if (name.equals(playerNames[i])) {
                         players[i] = new villager(name, role);
-                        players[i].hasRoleOnNight=false;
+                        allMembers[i] = new villager(name , role);
+                        players[i].hasRoleOnNight = false;
                         foundName = true;
                         break;
                     }
@@ -126,71 +137,152 @@ public class Game {
         }
     }
 
-    public static void showList() {
+    public static boolean invalidRole(Player[] players , int members){
         for (int i = 0; i < members; i++) {
-            switch (players[i].playerRole) {
-                case "mafia" : System.out.println(playerNames[i] + ": mafia");break;
-                case "villager" : System.out.println(playerNames[i] + ": villager");break;
-                case "doctor" : System.out.println(playerNames[i] + ": doctor");break;
-                case "bulletproof" : System.out.println(playerNames[i] + ": bulletproof");break;
-                case "detective" : System.out.println(playerNames[i] + ": detective");break;
-                case "silencer" : System.out.println(playerNames[i] + ": silencer");break;
-                case "godfather" : System.out.println(playerNames[i] + ": godfather");break;
-                case "joker" : System.out.println(playerNames[i] + ": joker");break;
-                default : System.out.println("one or more player do not have a role");break;
-            }
+            if (players[i] == null)
+                return true;
         }
-        NighOn = false;
-        GameStarted = true;
+        return false;
     }
-
-    public static void endVote(){
-        int max=0;
-        int count=0;
-        String qorbani="";
-        for (int i = 0; i <members ; i++) {
-            if (players[i].voteNum >=max)
+    public static void endVote() {
+        int max = 0;
+        int count = 0;
+        for (int i = 0; i < members; i++) {
+            if (players[i].voteNum >= max )
                 max = players[i].voteNum;
         }
-        for (int i = 0; i <members ; i++) {
-            if (players[i].voteNum == max) {
+        for (int i = 0; i < members; i++) {
+            if (players[i].voteNum == max ) {
                 players[i].isKilled = true;
                 count++;
             }
         }
-        if (count>1) {
+        if (count > 1) {
             System.out.println("nobody died");
             for (int i = 0; i < members; i++) {
                 players[i].isKilled = false;
             }
             return;
         }
-        for (int i = 0; i <members ; i++) {
-            if (players[i].isKilled && players[i].playerRole.equals("Joker"))
+        for (int i = 0; i < members; i++) {
+            if (players[i].isKilled && (players[i] instanceof Joker) && !players[i].SavedByDoctor) {
                 System.out.println("Joker won!");
-            else if (players[i].isKilled && !players[i].playerRole.equals("Joker")) {
-                qorbani = players[i].playerName;
+                System.exit(0);
+            }
+            else if (players[i].isKilled && !(players[i] instanceof Joker) && !players[i].SavedByDoctor) {
+                System.out.println(players[i].playerName + " is dead");
+                allMembers[i].isKilled = true;
+                break;
             }
         }
-            System.out.println(qorbani + " is dead");
     }
 
-    public static void awakeonNights(){
-        for (int i = 0; i <members ; i++) {
-            if (players[i].hasRoleOnNight){
-                System.out.println(players[i].playerName + " : " + players[i].playerRole);
+    public static boolean getStatus(Player[] players , boolean answer){
+        int countVillager = 0 , countMafia=0;
+        for (int i = 0; i < members; i++) {
+            if (players[i] instanceof mafia || players[i] instanceof godfather
+                    || players[i] instanceof silencer)
+                countMafia++;
+            else if (!(players[i] instanceof Joker) && !(players[i] instanceof mafia)
+                    && !(players[i] instanceof godfather) && !(players[i] instanceof silencer))
+                countVillager++;
+        }
+        if (answer){
+            System.out.println("Mafia : " + countMafia);
+            System.out.println("Villager : " + countVillager);
+        }
+        if (countMafia==0){
+            villagerWon=true;
+            return true;
+        }
+        else if (countVillager <= countMafia){
+            mafiaWon=true;
+            return true;
+        }
+        return false;
+    }
+
+    public static void NightReport(Player[] players) {
+        int max = 0, count = 0;
+        if (Night.changes) {
+            for (int i = 0; i < players.length; i++) {
+                if (players[i].voteNum >= max && !players[i].SavedByDoctor && !players[i].hasExteraHeart) {
+                    max = players[i].voteNum;
+                }
+            }
+            for (int i = 0; i < players.length; i++) {
+                if (players[i].voteNum == max && !players[i].SavedByDoctor && !players[i].hasExteraHeart) {
+                    players[i].isKilled = true;
+                    playerNames[i] = null;
+                    triedTokill = players[i].playerName;
+                    count++;
+                }
+            }
+            if (count > 1)
+                triedTokill = null;
+            else if (triedTokill != null) {
+                System.out.println("mafia tried to kill " + triedTokill);
+                System.out.println(triedTokill + " was killed");
+            }
+            for (int i = 0; i < players.length; i++) {
+                if (players[i].isSilent) {
+                    System.out.println("Silenced " + silent);
+                }
+            }
+            for (int i = 0; i < players.length; i++) {
+                for (int j = 0; j < players.length; j++) {
+                    if (players[i].swapped && players[j].swapped) {
+                        System.out.println(players[i].playerName + " swapped characters with " + players[j].playerName);
+                    }
+                }
             }
         }
+        day.outDeadOnes(players);
+    }
+
+    public static void showList(Player[] players) {
+        for (int i = 0; i < players.length; i++) {
+            switch (players[i].playerRole) {
+                case "mafia":
+                    System.out.println(players[i].playerName + ": mafia");
+                    break;
+                case "villager":
+                    System.out.println(players[i].playerName + ": villager");
+                    break;
+                case "doctor":
+                    System.out.println(players[i].playerName + ": doctor");
+                    break;
+                case "bulletproof":
+                    System.out.println(players[i].playerName + ": bulletproof");
+                    break;
+                case "detective":
+                    System.out.println(players[i].playerName + ": detective");
+                    break;
+                case "silencer":
+                    System.out.println(players[i].playerName + ": silencer");
+                    break;
+                case "godfather":
+                    System.out.println(players[i].playerName + ": godfather");
+                    break;
+                case "Joker":
+                    System.out.println(players[i].playerName + ": Joker");
+                    break;
+                default:
+                    System.out.println("role not found");
+                    break;
+            }
+        }
+        GameStarted = true;
     }
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        String order = "", names = "", playersRole = "" , voter="" , votee="";
-        String[] role = {"Joker", "villager", "detective", "doctor", "bulletproof", "mafia", "godfather", "silencer"};
+        String order = "", names = "", playersRole = "";
         String[] splits = null;
         System.out.println("   Mafia Is Watching You !   ");
-        System.out.println("   To Join the club Enter 'create_game'      ");
-        while (true) {
+        System.out.println("   To Join the club Enter 'create_game' and players      ");
+
+        first : while (true) {
             order = sc.next();
             switch (order) {
                 case "create_game":
@@ -201,50 +293,61 @@ public class Game {
                         createGame(splits, members);
                         GameCreated = true;
                         break;
-                    }else if (GameCreated) {
+                    } else {
                         System.out.println("game already started");
                         continue;
                     }
-                    break;
 
                 case "assign_role":
                     if (!GameCreated) {
                         System.out.println("no game created");
-                        continue;
+                        continue first;
                     } else {
-                            names = sc.next();
-                            playersRole = sc.next();
-                            setRoles(names, playersRole);
+                        names = sc.next();
+                        playersRole = sc.next();
+                        setRoles(names, playersRole);
                     }
                     break;
+
+                case "get_game_state":
+                    getStatus(players, true);
+                    break;
+
                 case "start_game":
-                    if (GameStarted)
+                    if (GameStarted) {
                         System.out.println("game has already started");
+                        continue first;
+                    }
                     if (!GameCreated) {
                         System.out.println("no game created");
-                        System.out.println("Enter create_games");
-                        break;
-                    }else {
-                        showList();
-                        System.out.println();
-                        System.out.println("Ready? Set! Go...");
-                        System.out.println();
-                        System.out.println("Day : " + numofDay );
-                        numofDay++;
-                        System.out.println("Now you can vote");
-                        Day day = new Day();
-                        day.sunRise(players , members , foundvoter , foundvotee);
+                        System.out.println("Enter create_game first");
+                        continue first;
                     }
-                    break;
-                case "end_vote":
-                    endVote();
+                    if (invalidRole(players, members)) {
+                        System.out.println("one or more player do not have a role");
+                        continue first;
+                    }
+                    showList(players);
+                    System.out.println("Ready? Set! Go...");
                     System.out.println();
-                    System.out.println("Night " + numofNight );
-                    numofNight++;
-                    awakeonNights();
-                    break;
+                    while (true) {
+                        day.sunRise(players);
+                        endVote();
+                        day.outDeadOnes(players);
+                        if (getStatus(players, false))
+                            break first;
+                        night.midNight(players);
+                        //NightReport(players);
+                        //day.outDeadOnes(players);
+                        if (getStatus(players, false))
+                            break first;
+                    }
             }
         }
+        if (villagerWon)
+            System.out.println("villager Won :D ");
+        else if (mafiaWon)
+            System.out.println("Mafia Won :/ ");
     }
 }
 
