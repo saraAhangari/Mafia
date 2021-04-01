@@ -4,4 +4,7 @@ public class villager extends Player{
         super(playerName, playerRole);
         super.hasRoleOnNight=false;
     }
+
+    @Override
+    public void NightRole(Player[] player , String name) {}
 }
