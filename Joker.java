@@ -4,4 +4,7 @@ public class Joker extends Player{
         super(playerName, playerRole);
         super.hasRoleOnNight=false;
     }
+
+    @Override
+    public void NightRole(Player[] players , String votee){}
 }
