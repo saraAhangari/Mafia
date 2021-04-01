@@ -3,9 +3,31 @@ public class silencer extends Player{
     public silencer(String playerName, String playerRole) {
         super(playerName, playerRole);
         super.hasRoleOnNight=false;
+        super.silencerCount=0;
     }
 
-    public void silent(Player player){
-        player.isSilent = true;
+    @Override
+    public void NightRole(Player[] players , String votee) {
+        if (silencerCount==0){
+            for (int i = 0; i < players.length ; i++) {
+                if (votee.equals(players[i].playerName)){
+                    players[i].isSilent = true;
+                    Game.silent = players[i].playerName;
+                    Night.changes=true;
+                    silencerCount++;
+                    break;
+                }
+            }
+        }
+        else {
+            for (int i = 0; i <players.length ; i++) {
+                if (votee.equals(players[i].playerName)){
+                    players[i].voteNum++;
+                    break;
+                }
+            }
+            Night.changes=true;
+            silencerCount++;
+        }
     }
 }
