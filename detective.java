@@ -7,17 +7,17 @@ public class detective extends Player {
 
     @Override
     public void NightRole(Player[] players, String votee) {
-        for (int i = 0; i < players.length; i++) {
-            if (votee.equals(players[i].playerName)) {
-                if (players[i].isKilled) {
-                    System.out.println("suspect is dead");
-                    break;
-                }
-            }
-        }
         if (detectiveCount != 0) {
             System.out.println("detective has already asked");
         } else {
+            for (int i = 0; i < players.length; i++) {
+                if (votee.equals(players[i].playerName)) {
+                    if (Game.allMembers[i].isKilled) {
+                        System.out.println("suspect is dead");
+                        return;
+                    }
+                }
+            }
             for (int i = 0; i < players.length; i++) {
                 if (votee.equals(players[i].playerName)) {
                     if (players[i] instanceof mafia) {
@@ -31,4 +31,5 @@ public class detective extends Player {
             }
         }
     }
+
 }
