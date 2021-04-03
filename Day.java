@@ -3,9 +3,7 @@ import java.util.Scanner;
 public class Day {
     Scanner sc = new Scanner(System.in);
     String voter = "", votee = "";
-    public int numofDay = 1;
-    public static boolean GameStarted = false;
-    public static Player[] victimPlayers;
+    public static int numofDay = 1;
 
     public int mafiaState(Player[] players) {
         int count = 0;
@@ -25,7 +23,7 @@ public class Day {
         return count;
     }
 
-    public void outDeadOnes(Player[] players) {
+    public void resetVotes(Player[] players) {
         for (int i = 0; i < players.length; i++) {
             players[i].voteNum = 0;
         }
@@ -33,12 +31,40 @@ public class Day {
 
     public void sunRise(Player[] players) {
         System.out.println("Day " + numofDay);
-        Game.NightReport(players);
+        //age ruze aval nabud be tartib
+        // 1. report shabe ghabl
+        // 2. be joz silent o june ezafeye bulletproof ke moheme , baghie hame reset mishan
+        if (numofDay != 1) {
+            Game.NightReport(players);
+            for (int i = 0; i < players.length; i++) {
+                if (players[i].detectiveCount != 0)
+                    players[i].detectiveCount = 0;
+                if (players[i].silencerCount != 0)
+                    players[i].silencerCount = 0;
+                if (players[i].SavedByDoctor)
+                    players[i].SavedByDoctor = false;
+                if (players[i].votes != 0)
+                    players[i].votes = 0;
+            }
+            Game.triedTokill = null;
+            Game.silent = null;
+        }
         numofDay++;
         while (true) {
             voter = sc.next();
-            if (voter.equals("end_vote"))
+            if (voter.equals("end_vote")) {
+                //ghabl az eelam natijeye ray girie ruz is silent ha badahste mishe
+                for (int i = 0; i < players.length; i++) {
+                    if (players[i].isSilent)
+                        players[i].isSilent = false;
+                }
                 break;
+            }
+            if (voter.equals("swap_character")){
+                System.out.println("voting in progress");
+                sc.nextLine();
+                continue;
+            }
             if (voter.equals("get_game_state")) {
                 System.out.println("Mafia : " + mafiaState(players));
                 System.out.println("Villager : " + villagerState(players));
