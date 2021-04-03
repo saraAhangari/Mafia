@@ -22,5 +22,6 @@ public abstract class Player {
         this.voteNum=0;
         this.swapped = false;
     }
+
     public abstract void NightRole(Player[] players , String name);
 }
