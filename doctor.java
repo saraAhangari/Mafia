@@ -10,6 +10,7 @@ public class doctor extends Player{
         for (int i = 0; i < players.length ; i++) {
             if (votee.equals(players[i].playerName)){
                 players[i].SavedByDoctor = true;
+                break;
             }
         }
     }
