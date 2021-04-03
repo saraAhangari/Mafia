@@ -2,7 +2,7 @@ public class silencer extends Player{
 
     public silencer(String playerName, String playerRole) {
         super(playerName, playerRole);
-        super.hasRoleOnNight=false;
+        super.hasRoleOnNight=true;
         super.silencerCount=0;
     }
 
@@ -23,11 +23,11 @@ public class silencer extends Player{
             for (int i = 0; i <players.length ; i++) {
                 if (votee.equals(players[i].playerName)){
                     players[i].voteNum++;
+                    Night.changes=true;
+                    silencerCount++;
                     break;
                 }
             }
-            Night.changes=true;
-            silencerCount++;
         }
     }
 }
