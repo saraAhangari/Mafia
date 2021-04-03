@@ -1,8 +1,13 @@
 import java.util.Scanner;
 
+/*
+    github :
+    https://github.com/saraAhangari/Mafia.git
+*/
+
 public class Game {
     public static Player[] players;
-    public static Player[] allMembers;
+    public static Player[] allMembers; //baraye gozineye killed ke bad az yek dor reset shodan victim dobare zende nashe
     public static String[] playerNames;
     public static int members = 0 ;
     public static boolean GameCreated = false;
@@ -12,7 +17,6 @@ public class Game {
     public static boolean villagerWon = false;
     public static String triedTokill = null;
     public static String silent = null;
-    public static String victim = null;
     public static Night night = new Night();
     public static Day day = new Day();
 
@@ -37,6 +41,9 @@ public class Game {
                         foundName = true;
                         break;
                     }
+                    else {
+                        foundName=false;
+                    }
                 }
                 if (!foundName)
                     System.out.println("user not found");
@@ -49,6 +56,9 @@ public class Game {
                         players[i].hasRoleOnNight = true;
                         foundName = true;
                         break;
+                    }
+                    else {
+                        foundName=false;
                     }
                 }
                 if (!foundName)
@@ -63,6 +73,9 @@ public class Game {
                         foundName = true;
                         break;
                     }
+                    else {
+                        foundName=false;
+                    }
                 }
                 if (!foundName)
                     System.out.println("user not found");
@@ -75,6 +88,9 @@ public class Game {
                         players[i].hasRoleOnNight = false;
                         foundName = true;
                         break;
+                    }
+                    else {
+                        foundName=false;
                     }
                 }
                 if (!foundName)
@@ -89,6 +105,9 @@ public class Game {
                         foundName = true;
                         break;
                     }
+                    else {
+                        foundName=false;
+                    }
                 }
                 if (!foundName)
                     System.out.println("user not found");
@@ -102,6 +121,9 @@ public class Game {
                         foundName = true;
                         break;
                     }
+                    else {
+                        foundName=false;
+                    }
                 }
                 if (!foundName)
                     System.out.println("user not found");
@@ -111,9 +133,12 @@ public class Game {
                     if (name.equals(playerNames[i])) {
                         players[i] = new silencer(name, role);
                         allMembers[i] = new silencer(name , role);
-                        players[i].hasRoleOnNight = false;
+                        players[i].hasRoleOnNight = true;
                         foundName = true;
                         break;
+                    }
+                    else {
+                        foundName=false;
                     }
                 }
                 if (!foundName)
@@ -128,6 +153,9 @@ public class Game {
                         foundName = true;
                         break;
                     }
+                    else {
+                        foundName=false;
+                    }
                 }
                 if (!foundName)
                     System.out.println("user not found");
@@ -135,109 +163,6 @@ public class Game {
             default:
                 System.out.println("role not found");
         }
-    }
-
-    public static boolean invalidRole(Player[] players , int members){
-        for (int i = 0; i < members; i++) {
-            if (players[i] == null)
-                return true;
-        }
-        return false;
-    }
-    public static void endVote() {
-        int max = 0;
-        int count = 0;
-        for (int i = 0; i < members; i++) {
-            if (players[i].voteNum >= max )
-                max = players[i].voteNum;
-        }
-        for (int i = 0; i < members; i++) {
-            if (players[i].voteNum == max ) {
-                players[i].isKilled = true;
-                count++;
-            }
-        }
-        if (count > 1) {
-            System.out.println("nobody died");
-            for (int i = 0; i < members; i++) {
-                players[i].isKilled = false;
-            }
-            return;
-        }
-        for (int i = 0; i < members; i++) {
-            if (players[i].isKilled && (players[i] instanceof Joker) && !players[i].SavedByDoctor) {
-                System.out.println("Joker won!");
-                System.exit(0);
-            }
-            else if (players[i].isKilled && !(players[i] instanceof Joker) && !players[i].SavedByDoctor) {
-                System.out.println(players[i].playerName + " is dead");
-                allMembers[i].isKilled = true;
-                break;
-            }
-        }
-    }
-
-    public static boolean getStatus(Player[] players , boolean answer){
-        int countVillager = 0 , countMafia=0;
-        for (int i = 0; i < members; i++) {
-            if (players[i] instanceof mafia || players[i] instanceof godfather
-                    || players[i] instanceof silencer)
-                countMafia++;
-            else if (!(players[i] instanceof Joker) && !(players[i] instanceof mafia)
-                    && !(players[i] instanceof godfather) && !(players[i] instanceof silencer))
-                countVillager++;
-        }
-        if (answer){
-            System.out.println("Mafia : " + countMafia);
-            System.out.println("Villager : " + countVillager);
-        }
-        if (countMafia==0){
-            villagerWon=true;
-            return true;
-        }
-        else if (countVillager <= countMafia){
-            mafiaWon=true;
-            return true;
-        }
-        return false;
-    }
-
-    public static void NightReport(Player[] players) {
-        int max = 0, count = 0;
-        if (Night.changes) {
-            for (int i = 0; i < players.length; i++) {
-                if (players[i].voteNum >= max && !players[i].SavedByDoctor && !players[i].hasExteraHeart) {
-                    max = players[i].voteNum;
-                }
-            }
-            for (int i = 0; i < players.length; i++) {
-                if (players[i].voteNum == max && !players[i].SavedByDoctor && !players[i].hasExteraHeart) {
-                    players[i].isKilled = true;
-                    playerNames[i] = null;
-                    triedTokill = players[i].playerName;
-                    count++;
-                }
-            }
-            if (count > 1)
-                triedTokill = null;
-            else if (triedTokill != null) {
-                System.out.println("mafia tried to kill " + triedTokill);
-                System.out.println(triedTokill + " was killed");
-            }
-            for (int i = 0; i < players.length; i++) {
-                if (players[i].isSilent) {
-                    System.out.println("Silenced " + silent);
-                }
-            }
-            for (int i = 0; i < players.length; i++) {
-                for (int j = 0; j < players.length; j++) {
-                    if (players[i].swapped && players[j].swapped) {
-                        System.out.println(players[i].playerName + " swapped characters with " + players[j].playerName);
-                    }
-                }
-            }
-        }
-        day.outDeadOnes(players);
     }
 
     public static void showList(Player[] players) {
@@ -275,20 +200,152 @@ public class Game {
         GameStarted = true;
     }
 
+    //check kone hameye player ha assign_role shode bashan
+    public static boolean invalidRole(Player[] players , int members){
+        for (int i = 0; i < members; i++) {
+            if (players[i] == null)
+                return true;
+        }
+        return false;
+    }
+
+    //eelam natijeye ray girie ruz
+    public static void endVote() {
+        int max = 0;
+        int count = 0;
+        for (int i = 0; i < members; i++) {
+            if (players[i].voteNum >= max)
+                max = players[i].voteNum;
+        }
+        for (int i = 0; i < members; i++) {
+            if (players[i].voteNum == max ) {
+                players[i].isKilled = true;
+                count++;
+            }
+        }
+        if (count > 1) {
+            System.out.println("nobody died");
+            //baraye halati ke chand nafar morde budan chon kasi dar nahayat nemimire hameye isKilled ha false mishe
+            for (int i = 0; i < members; i++) {
+                players[i].isKilled = false;
+            }
+            return;
+        }
+        for (int i = 0; i < members; i++) {
+            if (players[i].isKilled && (players[i] instanceof Joker)) {
+                System.out.println("Joker won!");
+                System.exit(0);
+            }
+            else if (players[i].isKilled && !(players[i] instanceof Joker)) {
+                System.out.println(players[i].playerName + " is dead");
+                //player az arayeye allMembers kill mishe ke dobare zende nashe
+                allMembers[i].isKilled = true;
+                break;
+            }
+        }
+    }
+
+    public static boolean getStatus(Player[] players , boolean answer){
+        int countVillager = 0 , countMafia=0;
+        for (int i = 0; i < members; i++) {
+            if (!allMembers[i].isKilled) {
+                if (players[i] instanceof mafia || players[i] instanceof godfather
+                        || players[i] instanceof silencer)
+                    countMafia++;
+                else if (players[i] instanceof bulletproof || players[i] instanceof detective
+                        || players[i] instanceof doctor || players[i] instanceof villager)
+                    countVillager++;
+            }
+        }
+        if (answer){
+            System.out.println("Mafia : " + countMafia);
+            System.out.println("Villager : " + countVillager);
+        }
+        if (countMafia==0){
+            villagerWon=true;
+            return true;
+        }
+        else if (countVillager <= countMafia){
+            mafiaWon=true;
+            return true;
+        }
+        return false;
+    }
+
+    //ray giri shab anjam mishe
+    public static void nightVote(Player[] players){
+        int max = 0, count = 0;
+        if (Night.changes) {
+            for (int i = 0; i < players.length; i++) {
+                if (players[i].voteNum >= max  && !players[i].SavedByDoctor && !players[i].hasExteraHeart) {
+                    max = players[i].voteNum;
+                }
+            }
+            for (int i = 0; i < players.length; i++) {
+                if (players[i].voteNum == max  && !players[i].SavedByDoctor && !players[i].hasExteraHeart) {
+                    players[i].isKilled = true;
+                    count++;
+                }
+            }
+
+            if (count > 1){
+                for (int i = 0; i < members; i++) {
+                    players[i].isKilled = false;
+                }
+            }
+            else {
+                for (int i = 0; i < players.length ; i++) {
+                    if (players[i].isKilled){
+                        allMembers[i].isKilled = true;
+                        triedTokill = players[i].playerName;
+                    }
+                }
+            }
+
+        }
+    }
+
+    //eelam natije ray giri shab
+    public static void NightReport(Player[] players) {
+        if (Night.changes) {
+            if (triedTokill != null){
+                System.out.println("mafia tried to kill " + triedTokill);
+                System.out.println(triedTokill + " was killed");
+            }
+            if (silent != null) {
+                for (int i = 0; i < players.length; i++) {
+                    if (players[i].isSilent) {
+                        System.out.println("Silenced " + silent);
+                    }
+                }
+            }
+            outer :for (int i = 0; i < players.length; i++) {
+                for (int j = i+1 ; j < players.length; j++) {
+                    if (players[i].swapped && players[j].swapped) {
+                        System.out.println(players[i].playerName + " swapped characters with " + players[j].playerName);
+                        break outer;
+                    }
+                }
+            }
+        }
+    }
+
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        String order = "", names = "", playersRole = "";
+        String order = "", name = "", role = "";
         String[] splits = null;
-        System.out.println("   Mafia Is Watching You !   ");
-        System.out.println("   To Join the club Enter 'create_game' and players      ");
+        System.out.println("                  Mafia Is Watching You !                       ");
+        System.out.println("   To Join the club Enter 'create_game' and players' names      ");
 
-        first : while (true) {
+        outer : while (true) {
             order = sc.next();
             switch (order) {
                 case "create_game":
                     if (!GameCreated) {
-                        names = sc.nextLine().replaceFirst(" ", "");
-                        splits = names.split(" ");
+                        //chon avalin fasela ro ham hesab mikone az replaceFirst use mikonim
+                        // ke size araye dochare moshkel nashe
+                        name = sc.nextLine().replaceFirst(" ", "");
+                        splits = name.split(" ");
                         members = splits.length;
                         createGame(splits, members);
                         GameCreated = true;
@@ -301,11 +358,11 @@ public class Game {
                 case "assign_role":
                     if (!GameCreated) {
                         System.out.println("no game created");
-                        continue first;
+                        break;
                     } else {
-                        names = sc.next();
-                        playersRole = sc.next();
-                        setRoles(names, playersRole);
+                        name = sc.next();
+                        role = sc.next();
+                        setRoles(name, role);
                     }
                     break;
 
@@ -316,31 +373,34 @@ public class Game {
                 case "start_game":
                     if (GameStarted) {
                         System.out.println("game has already started");
-                        continue first;
+                        continue outer;
                     }
                     if (!GameCreated) {
                         System.out.println("no game created");
                         System.out.println("Enter create_game first");
-                        continue first;
+                        continue outer;
                     }
                     if (invalidRole(players, members)) {
                         System.out.println("one or more player do not have a role");
-                        continue first;
+                        continue outer;
                     }
                     showList(players);
+                    System.out.println();
                     System.out.println("Ready? Set! Go...");
                     System.out.println();
                     while (true) {
                         day.sunRise(players);
                         endVote();
-                        day.outDeadOnes(players);
+                        //vote ha hame 0 mishe amade baraye shab
+                        day.resetVotes(players);
+                        //check mikone bebine bazi tamume ya na
                         if (getStatus(players, false))
-                            break first;
+                            break outer;
                         night.midNight(players);
-                        //NightReport(players);
-                        //day.outDeadOnes(players);
+                        nightVote(players);
+                        day.resetVotes(players);
                         if (getStatus(players, false))
-                            break first;
+                            break outer;
                     }
             }
         }
