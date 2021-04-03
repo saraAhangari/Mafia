@@ -5,7 +5,6 @@ public class Night {
     String voter = "", votee = "", first = "", second = "";
     public static int numofNight = 1;
     public static boolean changes = false;
-    int swap = 0;
 
     public int mafiaState(Player[] players) {
         int count = 0;
@@ -36,7 +35,7 @@ public class Night {
 
     public void Swap(String first, String second, Player[] players) {
         Player temp;
-        for (int i = 0; i < players.length; i++) {
+        outer :for (int i = 0; i < players.length; i++) {
             if (first.equals(players[i].playerName)) {
                 for (int j = 0; j < players.length; j++) {
                     if (second.equals(players[j].playerName)) {
@@ -46,6 +45,7 @@ public class Night {
 
                         players[i].swapped = true;
                         players[j].swapped = true;
+                        break outer;
                     }
                 }
             }
@@ -56,20 +56,17 @@ public class Night {
         System.out.println("Night " + numofNight);
         numofNight++;
         for (int i = 0; i < players.length; i++) {
-            if (players[i].hasRoleOnNight && !players[i].isKilled) {
+            if (players[i].hasRoleOnNight && !Game.allMembers[i].isKilled) {
                 System.out.println(players[i].playerName + " : " + players[i].playerRole);
             }
         }
         while (true) {
             voter = sc.next();
             if (voter.equals("end_night")) {
+                //swap anjam mishe
                 sc.next();
                 first = sc.next();
                 second = sc.next();
-                if (swap > 1) {
-                    System.out.println("characters already swapped");
-                    break;
-                }
 
                 Player deadVoter = searchPlayer(players, first);
                 Player deadVotee = searchPlayer(players, second);
@@ -79,8 +76,8 @@ public class Night {
                     return;
                 }
                 Swap(first, second, players);
+                //boolean changes baraye methos nightReport dar Game niaz mishe
                 changes=true;
-                swap++;
                 break;
             }
             if (voter.equals("get_game_state")) {
@@ -116,6 +113,7 @@ public class Night {
                 System.out.println("user can not wake up during night");
                 continue;
             }
+            //baad az daryafte votee ba tavajoh be naghshesh , methode makhsus farakhani mishe
             foundvoter.NightRole(players,votee);
         }
     }
