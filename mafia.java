@@ -19,6 +19,7 @@ public class mafia extends Player {
                 }
                 if (votee.equals(players[i].playerName) && players[i].hasExteraHeart){
                     players[i].hasExteraHeart = false;
+                    break;
                 }
             }
         }
@@ -30,11 +31,15 @@ public class mafia extends Player {
                 }
             }
             for (int i = 0; i < players.length; i++) {
-                if (votee.equals(players[i].playerName)){
+                if (votee.equals(players[i].playerName) && !players[i].hasExteraHeart){
                     lastVote = players[i].playerName;
                     players[i].voteNum++;
                     votes++;
                     Night.changes=true;
+                    break;
+                }
+                if (votee.equals(players[i].playerName) && players[i].hasExteraHeart){
+                    players[i].hasExteraHeart = false;
                     break;
                 }
             }
