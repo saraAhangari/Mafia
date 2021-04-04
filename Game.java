@@ -85,7 +85,7 @@ public class Game {
                     if (name.equals(playerNames[i])) {
                         players[i] = new godfather(name, role);
                         allMembers[i] = new godfather(name , role);
-                        players[i].hasRoleOnNight = false;
+                        players[i].hasRoleOnNight = true;
                         foundName = true;
                         break;
                     }
@@ -273,35 +273,37 @@ public class Game {
     }
 
     //ray giri shab anjam mishe
-    public static void nightVote(Player[] players){
+    public static void nightVote(Player[] players) {
+        Player sample = null;
         int max = 0, count = 0;
         if (Night.changes) {
             for (int i = 0; i < players.length; i++) {
-                if (players[i].voteNum >= max  && !players[i].SavedByDoctor && !players[i].hasExteraHeart) {
+                if (players[i].voteNum >= max && !players[i].SavedByDoctor && !players[i].hasExteraHeart) {
                     max = players[i].voteNum;
                 }
             }
             for (int i = 0; i < players.length; i++) {
-                if (players[i].voteNum == max  && !players[i].SavedByDoctor && !players[i].hasExteraHeart) {
-                    players[i].isKilled = true;
+                if (players[i].voteNum == max && !players[i].SavedByDoctor && !players[i].hasExteraHeart) {
+                    //players[i].isKilled = true;
+                    sample = players[i];
+                    triedTokill = players[i].playerName;
                     count++;
                 }
             }
 
-            if (count > 1){
+            if (count > 1) {
                 for (int i = 0; i < members; i++) {
                     players[i].isKilled = false;
                 }
-            }
-            else {
-                for (int i = 0; i < players.length ; i++) {
-                    if (players[i].isKilled){
+                triedTokill = null;
+            } else {
+                for (int i = 0; i < allMembers.length; i++) {
+                    if (allMembers[i].playerName.equals(sample.playerName)) {
                         allMembers[i].isKilled = true;
-                        triedTokill = players[i].playerName;
+                        break;
                     }
                 }
             }
-
         }
     }
 
@@ -323,6 +325,8 @@ public class Game {
                 for (int j = i+1 ; j < players.length; j++) {
                     if (players[i].swapped && players[j].swapped) {
                         System.out.println(players[i].playerName + " swapped characters with " + players[j].playerName);
+                        players[i].swapped = false;
+                        players[j].swapped = false;
                         break outer;
                     }
                 }
