@@ -8,8 +8,10 @@ public class Day {
     public int mafiaState(Player[] players) {
         int count = 0;
         for (int i = 0; i < players.length; i++) {
-            if (players[i].playerRole.equals("mafia") || players[i].playerRole.equals("godfather"))
-                count++;
+            if (!Game.allMembers[i].isKilled) {
+                if (players[i] instanceof mafia || players[i] instanceof godfather || players[i] instanceof silencer)
+                    count++;
+            }
         }
         return count;
     }
@@ -17,8 +19,11 @@ public class Day {
     public int villagerState(Player[] players) {
         int count = 0;
         for (int i = 0; i < players.length; i++) {
-            if (players[i].playerRole.equals("villager"))
-                count++;
+            if (!Game.allMembers[i].isKilled) {
+                if (players[i] instanceof villager || players[i] instanceof bulletproof
+                        || players[i] instanceof doctor || players[i] instanceof detective)
+                    count++;
+            }
         }
         return count;
     }
