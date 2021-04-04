@@ -9,8 +9,10 @@ public class Night {
     public int mafiaState(Player[] players) {
         int count = 0;
         for (int i = 0; i < players.length; i++) {
-            if (players[i].playerRole.equals("mafia") || players[i].playerRole.equals("godfather"))
-                count++;
+            if (!Game.allMembers[i].isKilled) {
+                if (players[i] instanceof mafia || players[i] instanceof godfather || players[i] instanceof silencer)
+                    count++;
+            }
         }
         return count;
     }
@@ -18,8 +20,11 @@ public class Night {
     public int villagerState(Player[] players) {
         int count = 0;
         for (int i = 0; i < players.length; i++) {
-            if (players[i].playerRole.equals("villager"))
-                count++;
+            if (!Game.allMembers[i].isKilled) {
+                if (players[i] instanceof villager || players[i] instanceof bulletproof
+                        || players[i] instanceof doctor || players[i] instanceof detective)
+                    count++;
+            }
         }
         return count;
     }
@@ -34,14 +39,14 @@ public class Night {
     }
 
     public void Swap(String first, String second, Player[] players) {
-        Player temp;
+        String temp;
         outer :for (int i = 0; i < players.length; i++) {
             if (first.equals(players[i].playerName)) {
                 for (int j = 0; j < players.length; j++) {
                     if (second.equals(players[j].playerName)) {
-                        temp = players[i];
-                        players[i] = players[j];
-                        players[j] = temp;
+                        temp = players[i].playerName;
+                        players[i].setPlayerName(players[j].playerName);
+                        players[j].setPlayerName(temp);
 
                         players[i].swapped = true;
                         players[j].swapped = true;
@@ -63,6 +68,11 @@ public class Night {
         while (true) {
             voter = sc.next();
             if (voter.equals("end_night")) {
+                //swap haye ghabli remove mishe
+                for (int i = 0; i < players.length ; i++) {
+                    if (players[i].swapped)
+                        players[i].swapped = false;
+                }
                 //swap anjam mishe
                 sc.next();
                 first = sc.next();
