@@ -278,13 +278,12 @@ public class Game {
         int max = 0, count = 0;
         if (Night.changes) {
             for (int i = 0; i < players.length; i++) {
-                if (players[i].voteNum >= max && !players[i].SavedByDoctor && !players[i].hasExteraHeart) {
+                if (players[i].voteNum >= max && !players[i].hasExteraHeart) {
                     max = players[i].voteNum;
                 }
             }
             for (int i = 0; i < players.length; i++) {
                 if (players[i].voteNum == max && !players[i].SavedByDoctor && !players[i].hasExteraHeart) {
-                    //players[i].isKilled = true;
                     sample = players[i];
                     triedTokill = players[i].playerName;
                     count++;
@@ -297,10 +296,12 @@ public class Game {
                 }
                 triedTokill = null;
             } else {
-                for (int i = 0; i < allMembers.length; i++) {
-                    if (allMembers[i].playerName.equals(sample.playerName)) {
-                        allMembers[i].isKilled = true;
-                        break;
+                if (sample != null) {
+                    for (int i = 0; i < allMembers.length; i++) {
+                        if (allMembers[i].playerName.equals(sample.playerName)) {
+                            allMembers[i].isKilled = true;
+                            break;
+                        }
                     }
                 }
             }
@@ -325,8 +326,6 @@ public class Game {
                 for (int j = i+1 ; j < players.length; j++) {
                     if (players[i].swapped && players[j].swapped) {
                         System.out.println(players[i].playerName + " swapped characters with " + players[j].playerName);
-                        players[i].swapped = false;
-                        players[j].swapped = false;
                         break outer;
                     }
                 }
