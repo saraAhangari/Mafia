@@ -20,11 +20,11 @@ public class detective extends Player {
             }
             for (int i = 0; i < players.length; i++) {
                 if (votee.equals(players[i].playerName)) {
-                    if (players[i] instanceof mafia) {
-                        System.out.println("yes");
+                    if (players[i] instanceof mafia || players[i] instanceof silencer) {
+                        System.out.println("YES");
                         detectiveCount++;
                     } else {
-                        System.out.println("no");
+                        System.out.println("NO");
                         detectiveCount++;
                     }
                 }
