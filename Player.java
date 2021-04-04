@@ -23,5 +23,9 @@ public abstract class Player {
         this.swapped = false;
     }
 
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
+    }
+
     public abstract void NightRole(Player[] players , String name);
 }
